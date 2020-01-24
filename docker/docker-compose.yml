@@ -1,0 +1,53 @@
+version: '3'
+services:
+
+    php-fpm:  
+        build: php-fpm
+        volumes:
+            - ../src:/var/www
+            #- "./php-fpm:/usr/local/etc/php"
+        working_dir: /var/www/app
+
+    frontend:
+        build:
+            context: ./nginx
+        volumes:
+            - ../src:/var/www
+            - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+            - ./nginx/sites/frontend:/etc/nginx/sites-available
+            - ./nginx/conf.d/:/etc/nginx/conf.d
+        depends_on:
+            - php-fpm
+        ports: 
+            - "20080:80"
+            - "20081:443"
+    
+    backend:
+        build:
+            context: ./nginx
+        volumes:
+            - ../src:/var/www
+            - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+            - ./nginx/sites/backend:/etc/nginx/sites-available
+            - ./nginx/conf.d/:/etc/nginx/conf.d
+        depends_on:
+            - php-fpm
+        ports: 
+            - "21080:80"
+            - "21081:443"
+
+    database:
+        build: database
+        ports:
+            - 23080:5432
+        restart: always
+        environment:
+            - POSTGRES_DB=etsdb
+            - POSTGRES_USER=ets_admin
+            - POSTGRES_PASSWORD=1
+        
+    adminer:
+        image: adminer
+        restart: always
+        ports:
+            - 22080:8080
