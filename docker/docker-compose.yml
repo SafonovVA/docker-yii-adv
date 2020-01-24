@@ -42,8 +42,8 @@ services:
             - 23080:5432
         restart: always
         environment:
-            - POSTGRES_DB=etsdb
-            - POSTGRES_USER=ets_admin
+            - POSTGRES_DB=db
+            - POSTGRES_USER=root
             - POSTGRES_PASSWORD=1
         
     adminer:
